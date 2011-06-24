@@ -19,7 +19,22 @@ class SuperMega < Sinatra::Base
     EOF
   end
   
-  #get "/weather"
+  get "/weather" do
+    weather_keys = list_weather
+    if env["HTTP_ACCEPT"] == "application/xml"
+      headers("Content-Type" => "application/xml")
+      <<-EOF
+        <?xml version="1.0"?>
+        <records>
+          #{weather_keys.collect { |key| weather_to_xml(get_weather(key)) }.join("\n")}
+        </records>
+      EOF
+    else
+      headers("Content-Type" => "application/json")
+      {"records" => weather_keys.collect { |key| get_weather(key) } }.to_json + "\n"
+    end
+  end
+  
   #get "/weather/:zip"
   
   post "/weather" do
