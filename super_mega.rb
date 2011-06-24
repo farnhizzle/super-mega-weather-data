@@ -26,7 +26,7 @@ class SuperMega < Sinatra::Base
       <<-EOF
         <?xml version="1.0"?>
         <records>
-          #{weather_keys.collect { |key| weather_to_xml(get_weather(key)) }.join("\n")}
+          #{weather_keys.collect { |key| weather_to_xml(get_weather(key), false) }.join("\n")}
         </records>
       EOF
     else
@@ -35,7 +35,21 @@ class SuperMega < Sinatra::Base
     end
   end
   
-  #get "/weather/:zip"
+  get "/weather/:zip" do
+    if !weather_exists(params[:zip])
+      status 404
+      body "Not Found\n"
+    else
+      weather = get_weather(params[:zip])
+      status 200
+      if env["HTTP_ACCEPT"] == "application/xml"
+        headers("Content-Type" => "application/xml")
+        body weather_to_xml(weather)
+      else
+        body weather.to_json + "\n"
+      end
+    end
+  end
   
   post "/weather" do
     if weather_exists(params[:zip])
