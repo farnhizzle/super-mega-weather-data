@@ -5,7 +5,14 @@ class SuperMega < Sinatra::Base
   #end
   
   get "/" do
-    "This is the Super Mega Weather Data Service. Enjoy!"
+    weather_keys = list_weather
+    <<-EOF
+      This is the Super Mega Weather Data Service. Enjoy!<br /><br />
+      <p>Our Weather:</p>
+      <ul>
+        <li>#{weather_keys.join("</li><li>")}</li>
+      </ul>
+    EOF
   end
   
   get "/weather" do
@@ -79,7 +86,12 @@ class SuperMega < Sinatra::Base
   
   private
     def redis
-      @redis ||= Redis.new
+      if ENV["REDISTOGO_URL"]
+        uri = URI.parse(ENV["REDISTOGO_URL"])
+        @redis ||= Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
+      else
+        @redis ||= Redis.new
+      end
     end
     
     def weather_exists(zip)
