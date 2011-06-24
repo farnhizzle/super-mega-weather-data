@@ -1,8 +1,8 @@
 class SuperMega < Sinatra::Base
   
-  #use Rack::Auth::Basic do |username, password|
-  #  username == 'admin' && password == 'secret'
-  #end
+  use Rack::Auth::Basic do |username, password|
+    username == 'admin' && password == 'secret'
+  end
   
   get "/" do
     weather_keys = list_weather
@@ -62,8 +62,29 @@ class SuperMega < Sinatra::Base
     end
   end
   
-  #put "/weather/:zip"
-  #delete "/weather/:zip"
+  put "/weather/:zip" do
+    if !weather_exists(params[:zip])
+      status 404
+      body "Not Found\n"
+    else
+      store_weather(params[:location], { :zip => params[:zip], :hi => params[:hi], :lo => params[:lo] })
+      
+      headers("Location" => "/weather/#{params[:zip]}")
+      status 200
+      body "OK\n"
+    end
+  end
+  
+  delete "/weather/:zip" do
+    if !weather_exists(params[:zip])
+      status 404
+      body "Not Found\n"
+    else
+      delete_weather(params[:zip])
+      status 200
+      body "OK\n"
+    end
+  end
     
   private
     def redis
