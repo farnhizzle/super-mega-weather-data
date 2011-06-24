@@ -26,6 +26,10 @@ class SuperMega < Sinatra::Base
     if weather_exists(params[:zip])
       status 409
       body "Already exists"
+    else
+      store_weather(params[:zip], { :hi => params[:hi], :lo => params[:lo] })
+      status 201
+      body "Created! So rad."
     end
   end
   
