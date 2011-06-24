@@ -1,8 +1,13 @@
 class SuperMega < Sinatra::Base
   
-  #use Rack::Auth::Basic do |username, password|
-  #  username == 'admin' && password == 'secret'
-  #end
+  map "/auth" do
+    use Rack::Auth::Basic do |username, password|
+      username == 'admin' && password == 'secret'
+    end
+  end
+  get "/auth" do
+    "You're authenticated"
+  end
   
   get "/" do
     weather_keys = list_weather
