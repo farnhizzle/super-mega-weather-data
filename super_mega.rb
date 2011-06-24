@@ -1,12 +1,7 @@
 class SuperMega < Sinatra::Base
   
-  map "/auth" do
-    use Rack::Auth::Basic do |username, password|
-      username == 'admin' && password == 'secret'
-    end
-  end
-  get "/auth" do
-    "You're authenticated"
+  use Rack::Auth::Basic do |username, password|
+    username == 'admin' && password == 'secret'
   end
   
   get "/" do
