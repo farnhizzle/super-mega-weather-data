@@ -21,7 +21,14 @@ class SuperMega < Sinatra::Base
   
   #get "/weather"
   #get "/weather/:zip"
-  #post "/weather"
+  
+  post "/weather" do
+    if weather_exists(params[:zip])
+      status 409
+      body "Already exists"
+    end
+  end
+  
   #put "/weather/:zip"
   #delete "/weather/:zip"
     
